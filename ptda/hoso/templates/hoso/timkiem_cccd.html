@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tìm kiếm hồ sơ bệnh án</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        li span {
+            margin-bottom: 5px;
+        }
+        p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Tìm kiếm hồ sơ bệnh án</h1>
+    <form action="{% url 'tim_kiem_cccd' %}" method="get">
+        <label for="so_cccd">Nhập số CCCD:</label>
+        <input type="text" id="so_cccd" name="so_cccd" required>
+        <button type="submit">Tìm kiếm</button>
+        
+    </form>
+
+    {% if hoso %}
+        <h2>Kết quả tìm kiếm</h2>
+        <h3>Thông tin bệnh nhân</h3>
+        <p><strong>Số CCCD:</strong> {{ hoso.so_cccd }}</p>
+        <p><strong>Số BHYT:</strong> {{ hoso.bhyt }}</p>
+        <p><strong>Tên:</strong> {{ hoso.ten }}</p>
+        <p><strong>Tuổi:</strong> {{ hoso.age }}</p>
+        <p><strong>Giới tính:</strong> {{ hoso.gioi_tinh }}</p>
+        <p><strong>Số điện thoại:</strong> {{ hoso.sdt }}</p>
+        <p><strong>Địa chỉ:</strong> {{ hoso.dia_chi }}</p>
+
+        {% if benh_an_list %}
+            <h3>Danh sách bệnh án</h3>
+            <ul>
+                {% for benh_an in benh_an_list %}
+                    <li>
+                        <span><strong>Mã bệnh án:</strong> {{ benh_an.ma_benh_an }}</span>
+                        <span><strong>Ngày khám:</strong> {{ benh_an.ngay_kham }}</span>
+                        <span><strong>Khoa điều trị:</strong> {{ benh_an.khoa_dieu_tri }}</span>
+                        <span><strong>Triệu chứng:</strong> {{ benh_an.trieu_chung }}</span>
+                        <span><strong>Chuẩn đoán:</strong> {{ benh_an.chuan_doan }}</span>
+                        <span><strong>Điều trị:</strong> {{ benh_an.dieu_tri }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Không tìm thấy hồ sơ bệnh án nào với số CCCD này.</p>
+        {% endif %}
+    {% elif search %}
+        <p>Không tìm thấy hồ sơ bệnh nhân nào với số CCCD này.</p>
+    {% endif %}
+    <form method="get" action="{% url 'danh_sach_hoso' %}">
+        {{ form.as_p }}
+        <button type="submit">Danh sách hồ sơ</button>
+    </form>
+</body>
+</html>

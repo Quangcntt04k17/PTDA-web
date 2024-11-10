@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Hồ Sơ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .edit-button:hover {
+            background-color: lightgray;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form method="get" action="{% url 'tim_kiem_cccd' %}">
+            {{ form.as_p }}
+            <button type="submit">Tìm kiếm hồ sơ</button>
+        </form>
+        <h1>Danh Sách Hồ Sơ</h1>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Số CCCD</th>
+                <th>Số BHYT</th>
+                <th>Tên</th>
+                <th>Tuổi</th>
+                <th>Giới Tính</th>
+                <th>Số Điện Thoại</th>
+                <th>Địa Chỉ</th>
+                <th>Thao Tác</th>
+            </tr>
+            {% for hoso in danh_sach_hs %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ hoso.so_cccd }}</td>
+                <td>{{ hoso.bhyt }}</td>
+                <td>{{ hoso.ten }}</td>
+                <td>{{ hoso.age }}</td>
+                <td>{{ hoso.gioi_tinh }}</td>
+                <td>{{ hoso.sdt }}</td>
+                <td>{{ hoso.dia_chi }}</td>
+                <td>
+                    <form method="get" action="{% url 'chi_tiet_hoso_view' %}">
+                        <input type="hidden" name="so_cccd" value="{{ hoso.so_cccd }}">
+                        <button type="submit" class="edit-button">Chi tiết</button>
+                    </form>
+                    <button class="edit-button">Sửa</button>
+                </td>  
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

@@ -1,22 +1,55 @@
 from django.db import models
 
-class Patient(models.Model):
-    # Thông tin cơ bản của bệnh nhân
-    name = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
-    gender = models.CharField(max_length=10, choices=[('Male', 'Nam'), ('Female', 'Nữ')])
-    phone_number = models.CharField(max_length=15, unique=True)
-    address = models.TextField()
+
+
+# Create your models here.
+
+class BenhNhan(models.Model):
+
+    GIOI_TINH_CHOICES = [
+    ('M', 'Nam'),
+    ('F', 'Nữ')
+]
+    maBenhNhan = models.CharField(max_length=10,primary_key=True)
+    soCCCD = models.IntegerField(unique=True, null=True, blank=True)
+    maBaoHiemYTe = models.IntegerField(unique=True, null=True,blank=True)
+    hoTenBenhNhan = models.CharField(max_length=50)
+    tuoi = models.IntegerField()
+    gioiTinh = models.CharField(max_length=5,choices=GIOI_TINH_CHOICES)  
+    soDienThoai = models.IntegerField()
+    diaChi = models.CharField(max_length=255)
+
 
     def __str__(self):
-        return f"{self.name} - {self.id}"
+        return self.hoTenBenhNhan
 
-class MedicalRecord(models.Model):
-    # Thông tin bệnh án
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="medical_records")
-    diagnosis = models.TextField()
-    treatment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+
+class BacSi(models.Model):
+    GIOI_TINH_CHOICES = [
+    ('M', 'Nam'),
+    ('F', 'Nữ')
+]
+
+    maBacSi = models.CharField(max_length=10,primary_key=True)
+    soCCCD=models.IntegerField(unique=True)
+    hoTenBacSi = models.CharField(max_length=50)
+    tuoi = models.IntegerField()
+    gioiTinh = models.CharField(max_length=5,choices=GIOI_TINH_CHOICES)  
+    soDienThoai = models.IntegerField()
+    diaChi = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.id} - {self.patient.name}"
+        return self.hoTenBacSi
+
+
+class HoSoBenhAn(models.Model):
+    
+    maBenhAn = models.CharField(max_length=10,primary_key=True)
+    benhNhan = models.ForeignKey(BenhNhan,on_delete=models.CASCADE)
+    thoiGianKham = models.DateTimeField(auto_created=True)
+    trieuChung = models.CharField(max_length=255)
+    chuanDoan = models.CharField(max_length=255)
+    dieuTri = models.CharField(max_length=255)
+    def __str__(self):
+        return f"Hồ sơ bệnh án của {self.benhNhan.hoTenBenhNhan} vào {self.thoiGianKham}"
+    

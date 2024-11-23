@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Manager
+from .models import Manager,BlacklistedToken
 
 class ManagerSerializer(serializers.ModelSerializer):
     class Meta: 
@@ -14,3 +14,10 @@ def update(self, instance, validated_data):
     if 'password' in validated_data:
         instance.password = validated_data['password']
     return super(ManagerSerializer, self).update(instance, validated_data)
+
+
+
+class BlacklistedTokenSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = BlacklistedToken
+        fields = '__all__'

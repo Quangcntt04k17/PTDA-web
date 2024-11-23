@@ -71,4 +71,3 @@ class JWTAuthenticationMiddleware:
         # Nếu không có token hoặc token không hợp lệ, bỏ qua xác thực
         return self.get_response(request)
 
-

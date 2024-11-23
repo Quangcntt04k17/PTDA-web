@@ -100,7 +100,6 @@ def get_csrf_token(request):
 
 
 
-
 class GetAccountsView(APIView):
     permission_classes = [IsAuthenticated]  # Yêu cầu người dùng phải đăng nhập
 
@@ -113,3 +112,60 @@ class GetAccountsView(APIView):
         admin_accounts = Manager.objects.filter(is_active=True)
         admin_data = ManagerSerializer(admin_accounts, many=True).data
         return Response({'admins': admin_data}, status=200)
+from .models import BlacklistedToken
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        try:
+            # Lấy refresh_token từ request data
+            refresh_token = request.data.get("refresh_token")
+
+            if refresh_token:
+                # Kiểm tra nếu refresh_token đã có trong blacklist
+                if BlacklistedToken.objects.filter(token=refresh_token).exists():
+                    return Response({"message": "Token has already been blacklisted."}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Nếu không có, tạo mới đối tượng BlacklistedToken
+                BlacklistedToken.objects.create(token=refresh_token)
+                print('Token added to blacklist')
+
+                # Trả về thông báo logout thành công
+                return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# tạo access token mới nếu mà refresh token có tồn tại trong blacklist
+# thì không tạo access token mới
+
+class TokenRefreshView(APIView):
+    permission_classes = [AllowAny]  
+    def post(self, request):
+        refresh_token = request.data.get("refresh_token")
+        
+        print('dong1')
+
+        # Kiểm tra refresh token có tồn tại
+        if not refresh_token:
+            return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Kiểm tra refresh token trong danh sách blacklist
+        if BlacklistedToken.objects.filter(token=refresh_token).exists():
+            return Response({"error": "This token has been blacklisted"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        print('dong2')
+
+        try:
+            # Xác thực và tạo access token mới
+            token = RefreshToken(refresh_token)
+            new_access_token = str(token.access_token)
+            return Response({
+                "access_token": new_access_token,
+                "refresh_token": refresh_token  # Giữ lại refresh token cũ
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+

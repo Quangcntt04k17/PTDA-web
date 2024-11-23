@@ -13,3 +13,10 @@ class Manager(models.Model):
         if not self.id:
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
+
+
+class BlacklistedToken(models.Model):
+    token = models.CharField(max_length=255, unique=True)
+    
+    def __str__(self):
+        return self.token

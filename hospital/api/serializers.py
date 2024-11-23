@@ -1,17 +1,28 @@
 from rest_framework import serializers
-from .models import Patient, MedicalRecord
+from .models import BenhNhan, BacSi,HoSoBenhAn
 
-class PatientSerializer(serializers.ModelSerializer):
+class BenhNhanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Patient
-        fields = '__all__'
+        model = BenhNhan
+        fields = '__all__' 
 
-class MedicalRecordSerializer(serializers.ModelSerializer):
+class BacSiSerializer (serializers.ModelSerializer):
     class Meta:
-        model = MedicalRecord
+        model = BacSi
+        fields = '__all__' 
+
+class HoSoBenhAnSerializer(serializers.ModelSerializer):
+    hoTenBenhNhan = serializers.CharField(source='benhNhan.hoTenBenhNhan', read_only=True)
+
+    class Meta:
+        model = HoSoBenhAn
         fields = '__all__'
-
-
+    
+    def validate_benhNhan(self, value):
+        # Kiểm tra xem bệnh nhân có tồn tại trong cơ sở dữ liệu hay không
+        if not BenhNhan.objects.filter(maBenhNhan=value.maBenhNhan).exists():
+            raise serializers.ValidationError("Bệnh nhân không tồn tại.")
+        return value 
 
 
 '''
